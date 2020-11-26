@@ -10,6 +10,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -265,6 +266,28 @@ public class InventoryUtils
         }
     }
 
+    public static void trySwitchToBlock(BlockPos pos) {
+        if (FeatureToggle.TWEAK_BLOCK_SWITCH.getBooleanValue())
+        {
+            MinecraftClient mc = MinecraftClient.getInstance();
+            PlayerEntity player = mc.player;
+            BlockState state = mc.world.getBlockState(pos);
+            ItemStack stack = player.getMainHandStack();
+
+            if (!state.getBlock().hasBlockEntity() && !state.isAir() &&
+                    (stack.isEmpty() || !(stack.getItem() instanceof net.minecraft.item.BlockItem)))
+            {
+                    ScreenHandler container = player.playerScreenHandler;
+                    int slotNumber = findSlotWithPlaceableBlock(container);
+
+                    if (slotNumber != -1 && (slotNumber - 36) != player.inventory.selectedSlot)
+                    {
+                        swapItemToHand(player, Hand.MAIN_HAND, slotNumber);
+                    }
+            }
+        }
+    }
+
     private static boolean isItemAtLowDurability(ItemStack stack, int minDurability)
     {
         return stack.isDamageable() && stack.getDamage() >= stack.getMaxDamage() - minDurability;
@@ -387,6 +410,28 @@ public class InventoryUtils
 
         return -1;
     }
+
+    public static int findSlotWithPlaceableBlock(ScreenHandler container)
+    {
+        final int startSlot = 0;
+        final int endSlot = container.slots.size();
+        final int increment = 1;
+        final boolean isPlayerInv = container instanceof PlayerScreenHandler;
+
+        for (int slotNum = startSlot; slotNum != endSlot; slotNum += increment)
+        {
+            Slot slot = container.slots.get(slotNum);
+            Item item = slot.getStack().getItem();
+
+            if (item instanceof BlockItem && ((BlockItem)item).getBlock().getDefaultState().getMaterial().isSolid())
+            {
+                return slot.id;
+            }
+        }
+
+        return -1;
+    }
+
 
     /**
      * Finds a slot with an identical item than <b>stackReference</b>, ignoring the durability

@@ -1,5 +1,8 @@
 package fi.dy.masa.tweakeroo.mixin;
 
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.hit.BlockHitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -90,6 +93,15 @@ public abstract class MixinClientPlayerInteractionManager
     private void onClickBlockPre(BlockPos pos, Direction face, CallbackInfoReturnable<Boolean> cir)
     {
         InventoryUtils.trySwitchToEffectiveTool(pos);
+        PlacementTweaks.cacheStackInHand(Hand.MAIN_HAND);
+    }
+
+
+    @Inject(method = "interactBlock",
+            at = @At(value = "HEAD"))
+    private void onClickBlockPre(ClientPlayerEntity player, ClientWorld world, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<Boolean> cir)
+    {
+        InventoryUtils.trySwitchToBlock(hitResult.getBlockPos());
         PlacementTweaks.cacheStackInHand(Hand.MAIN_HAND);
     }
 
