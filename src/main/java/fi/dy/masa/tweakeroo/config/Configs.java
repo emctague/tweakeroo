@@ -69,6 +69,8 @@ public class Configs implements IConfigHandler
         public static final ConfigInteger       PLACEMENT_LIMIT                     = new ConfigInteger     ("placementLimit", 3, 1, 10000, "The number of blocks you are able to place at maximum per\nright click, if tweakPlacementLimit is enabled.\nTo quickly adjust the value, scroll while\nholding down the tweak toggle keybind.");
         public static final ConfigOptionList    PLACEMENT_RESTRICTION_MODE          = new ConfigOptionList  ("placementRestrictionMode", PlacementRestrictionMode.FACE, "The Placement Restriction mode to use (hotkey-selectable)");
         public static final ConfigBoolean       PLACEMENT_RESTRICTION_TIED_TO_FAST  = new ConfigBoolean     ("placementRestrictionTiedToFast", true, "When enabled, the Placement Restriction mode will toggle\nits state of/off when you toggle the Fast Placement mode.");
+        public static final ConfigBoolean       PLAYER_INVENTORY_PEEK_ALWAYS        = new ConfigBoolean     ("playerInventoryPeekAlways", false, "When enabled, playerInventoryPeek will always show the inventory whilst that tweak is enabled.");
+        public static final ConfigBoolean       PLAYER_INVENTORY_PEEK_CORNER        = new ConfigBoolean     ("playerInventoryPeekCorner", false, "When enabled, the playerInventoryPeek HUD will appear in the bottom-left corner of the screen instead of the center.");
         public static final ConfigBoolean       POTION_WARNING_BENEFICIAL_ONLY      = new ConfigBoolean     ("potionWarningBeneficialOnly", true, "Only warn about potion effects running out that are marked as \"beneficial\"");
         public static final ConfigInteger       POTION_WARNING_THRESHOLD            = new ConfigInteger     ("potionWarningThreshold", 600, 1, 1000000, "The remaining duration of potion effects (in ticks)\nafter which the warning will start showing");
         public static final ConfigInteger       RENDER_LIMIT_ITEM                   = new ConfigInteger     ("renderLimitItem", -1, -1, 10000, "Maximum number of item entities rendered per frame.\nUse -1 for normal behaviour, ie. to disable this limit.");
@@ -104,6 +106,9 @@ public class Configs implements IConfigHandler
                 PLACEMENT_RESTRICTION_MODE,
                 HOTBAR_SWAP_OVERLAY_ALIGNMENT,
                 SNAP_AIM_MODE,
+
+                PLAYER_INVENTORY_PEEK_ALWAYS,
+                PLAYER_INVENTORY_PEEK_CORNER,
 
                 CHAT_TIME_FORMAT,
                 CHAT_BACKGROUND_COLOR,

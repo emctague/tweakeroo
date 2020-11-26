@@ -42,7 +42,8 @@ public class RenderHandler implements IRenderer
         }
 
         if (FeatureToggle.TWEAK_PLAYER_INVENTORY_PEEK.getBooleanValue() &&
-            Hotkeys.PLAYER_INVENTORY_PEEK.getKeybind().isKeybindHeld())
+                (Configs.Generic.PLAYER_INVENTORY_PEEK_ALWAYS.getBooleanValue() ||
+                        Hotkeys.PLAYER_INVENTORY_PEEK.getKeybind().isKeybindHeld()))
         {
             RenderUtils.renderPlayerInventoryOverlay(mc);
         }

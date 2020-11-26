@@ -1,5 +1,6 @@
 package fi.dy.masa.tweakeroo.renderer;
 
+import com.google.common.collect.Ordering;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
@@ -10,6 +11,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -28,6 +31,8 @@ import fi.dy.masa.tweakeroo.mixin.IMixinHorseBaseEntity;
 import fi.dy.masa.tweakeroo.util.MiscUtils;
 import fi.dy.masa.tweakeroo.util.RayTraceUtils;
 import fi.dy.masa.tweakeroo.util.SnapAimMode;
+import java.util.Collection;
+import java.util.Iterator;
 
 public class RenderUtils
 {
@@ -212,6 +217,12 @@ public class RenderUtils
     {
         int x = GuiUtils.getScaledWindowWidth() / 2 - 176 / 2;
         int y = GuiUtils.getScaledWindowHeight() / 2 + 10;
+
+        if (Configs.Generic.PLAYER_INVENTORY_PEEK_CORNER.getBooleanValue()) {
+            x = 10;
+            y = GuiUtils.getScaledWindowHeight() - 80;
+        }
+
         int slotOffsetX = 8;
         int slotOffsetY = 8;
         fi.dy.masa.malilib.render.InventoryOverlay.InventoryRenderType type = fi.dy.masa.malilib.render.InventoryOverlay.InventoryRenderType.GENERIC;
