@@ -275,7 +275,7 @@ public class InventoryUtils
             ItemStack stack = player.getMainHandStack();
 
             if (!state.getBlock().hasBlockEntity() && !state.isAir() &&
-                    (stack.isEmpty() || !(stack.getItem() instanceof net.minecraft.item.BlockItem)))
+                    (stack.isEmpty() || !(stack.getItem() instanceof net.minecraft.item.BlockItem) && !(stack.isFood())))
             {
                     ScreenHandler container = player.playerScreenHandler;
                     int slotNumber = findSlotWithPlaceableBlock(container);
