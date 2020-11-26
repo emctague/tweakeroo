@@ -313,6 +313,35 @@ public class RenderUtils
         RenderSystem.popMatrix();
     }
 
+    public static void renderStatusEffectDurationInHUD(MinecraftClient mc, MatrixStack matrixStack) {
+        Collection<StatusEffectInstance> collection = mc.player.getStatusEffects();
+
+        if (!collection.isEmpty()) {
+            TextRenderer textRenderer = mc.textRenderer;
+
+            Iterator<StatusEffectInstance> orderedEffects = Ordering.natural().reverse().sortedCopy(collection).iterator();
+
+            int goodIndex = 0, badIndex = 0;
+            while (orderedEffects.hasNext()) {
+                StatusEffectInstance effect = orderedEffects.next();
+                int x, y = 20;
+
+                if (effect.getEffectType().isBeneficial()) {
+                    goodIndex += 1;
+                    x = GuiUtils.getScaledWindowWidth() - (25 * (goodIndex));
+                } else {
+                    badIndex += 1;
+                    x = GuiUtils.getScaledWindowWidth() - (25 * (badIndex));
+                    y += 25;
+                }
+
+                String str = StatusEffectUtil.durationToString(effect, 1.0F);
+                fi.dy.masa.malilib.render.RenderUtils.drawRect(x, y, 25, 10, 0x55000000);
+                textRenderer.draw(matrixStack, str, x + (25 / 2) - (textRenderer.getWidth(str) / 2), y + 2, 0xFFFFFFFF);
+            }
+        }
+    }
+
     public static void notifyRotationChanged()
     {
         lastRotationChangeTime = System.currentTimeMillis();

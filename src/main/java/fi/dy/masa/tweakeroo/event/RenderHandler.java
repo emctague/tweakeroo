@@ -24,6 +24,11 @@ public class RenderHandler implements IRenderer
     {
         MinecraftClient mc = MinecraftClient.getInstance();
 
+        if (FeatureToggle.TWEAK_STATUS_EFFECT_TIME_HUD.getBooleanValue())
+        {
+            RenderUtils.renderStatusEffectDurationInHUD(mc, matrixStack);
+        }
+
         if (FeatureToggle.TWEAK_HOTBAR_SWAP.getBooleanValue() &&
             Hotkeys.HOTBAR_SWAP_BASE.getKeybind().isKeybindHeld())
         {
