@@ -2,6 +2,17 @@ package fi.dy.masa.tweakeroo.mixin;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
+import com.google.common.collect.ImmutableList;
+import fi.dy.masa.tweakeroo.config.FeatureToggle;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,6 +34,31 @@ public abstract class MixinClientWorld extends World
     protected MixinClientWorld(MutableWorldProperties properties, RegistryKey<World> registryKey, DimensionType dimensionType, Supplier<Profiler> supplier, boolean bl, boolean bl2, long l)
     {
         super(properties, registryKey, dimensionType, supplier, bl, bl2, l);
+    }
+
+
+    private Stream<BlockPos> allAdjacentBlocks(BlockPos pos) {
+        return ImmutableList.of(pos.up(), pos.down(), pos.north(), pos.south(), pos.east(), pos.west()).stream();
+    }
+
+    private String getFullNamespace(Block b) {
+        Identifier id = Registry.BLOCK.getId(b);
+        return id.getNamespace() + ":" + id.getPath();
+    }
+
+    @Inject(method = "updateListeners", at = @At("TAIL"))
+    private void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags, CallbackInfo ci) {
+        if (!oldState.isAir() && newState.isAir()) {
+            if (FeatureToggle.TWEAK_ANNOUNCE_EXPOSED_BLOCKS.getBooleanValue()) {
+
+                if (allAdjacentBlocks(pos)
+                        .filter(b -> Configs.Lists.ANNOUNCE_BLOCKS.getStrings().contains(getFullNamespace(getBlockState(b).getBlock())))
+                        .anyMatch(b -> allAdjacentBlocks(b).filter(p -> getBlockState(p).isTranslucent(this, p) || getBlockState(p).isAir())
+                                .count() < 2)) {
+                    playSound(MinecraftClient.getInstance().player, pos, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.MASTER, 1f, 1f);
+                }
+            }
+        }
     }
 
     @Override

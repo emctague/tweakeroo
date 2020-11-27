@@ -219,7 +219,7 @@ public class RenderUtils
         int y = GuiUtils.getScaledWindowHeight() / 2 + 10;
 
         if (Configs.Generic.PLAYER_INVENTORY_PEEK_CORNER.getBooleanValue()) {
-            x = 10;
+            x = GuiUtils.getScaledWindowWidth() - 176 - 10;
             y = GuiUtils.getScaledWindowHeight() - 80;
         }
 
