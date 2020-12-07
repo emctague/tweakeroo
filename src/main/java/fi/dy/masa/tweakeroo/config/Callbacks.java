@@ -1,10 +1,16 @@
 package fi.dy.masa.tweakeroo.config;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -25,6 +31,9 @@ import fi.dy.masa.tweakeroo.util.InventoryUtils;
 import fi.dy.masa.tweakeroo.util.MiscUtils;
 import fi.dy.masa.tweakeroo.util.PlacementRestrictionMode;
 import fi.dy.masa.tweakeroo.util.SnapAimMode;
+
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Callbacks
 {
@@ -59,6 +68,7 @@ public class Callbacks
         Hotkeys.HOTBAR_SWAP_2.getKeybind().setCallback(callbackGeneric);
         Hotkeys.HOTBAR_SWAP_3.getKeybind().setCallback(callbackGeneric);
         Hotkeys.HOTBAR_SCROLL.getKeybind().setCallback(callbackGeneric);
+        Hotkeys.LOG_BLOCK.getKeybind().setCallback(callbackGeneric);
         Hotkeys.OPEN_CONFIG_GUI.getKeybind().setCallback(callbackGeneric);
         Hotkeys.PLACEMENT_RESTRICTION_MODE_COLUMN.getKeybind().setCallback(callbackGeneric);
         Hotkeys.PLACEMENT_RESTRICTION_MODE_DIAGONAL.getKeybind().setCallback(callbackGeneric);
@@ -302,6 +312,54 @@ public class Callbacks
                     InventoryUtils.swapHotbarWithInventoryRow(mc.player, currentRow);
                     return true;
                 }
+            }
+            else if (key == Hotkeys.LOG_BLOCK.getKeybind())
+            {
+                HitResult trace = this.mc.crosshairTarget;
+
+                if (trace != null && trace.getType() == HitResult.Type.BLOCK)
+                {
+                    BlockPos pos = ((BlockHitResult) trace).getBlockPos();
+                    BlockState bs = this.mc.world.getBlockState(pos);
+
+                    if (bs != null) {
+                        String name = bs.toString();
+
+                        BlockEntity te = this.mc.world.getBlockEntity(pos);
+                        if (te != null) {
+                            CompoundTag tag = new CompoundTag();
+                            te.toTag(tag);
+                            name += "(entity=" + tag.toString() + ")";
+                        }
+
+                        try {
+                            FileWriter pw = new FileWriter(Configs.Generic.LOG_BLOCK_PATH.getStringValue(), true);
+
+                            ServerInfo info = this.mc.getCurrentServerEntry();
+                            String levelName = "?";
+                            if (info != null) {
+                                levelName = info.name + "->" + info.address;
+                            }
+
+                            pw.append(name.replaceAll(",", "\\,"))
+                                    .append(",")
+                                    .append(String.valueOf(pos.getX()))
+                                    .append(",")
+                                    .append(String.valueOf(pos.getY()))
+                                    .append(",")
+                                    .append(String.valueOf(pos.getZ()))
+                                    .append(",")
+                                    .append(levelName.replaceAll(",", "\\,"))
+                                    .append(",")
+                                    .append(this.mc.world.getRegistryManager().getDimensionTypes().getId(this.mc.world.getDimension()).getPath().replaceAll(",", "\\,"))
+                                    .append("\r\n");
+                            pw.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                return true;
             }
             else if (key == Hotkeys.BREAKING_RESTRICTION_MODE_COLUMN.getKeybind())
             {

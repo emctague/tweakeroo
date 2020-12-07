@@ -319,7 +319,8 @@ public class RenderUtils
         if (!collection.isEmpty()) {
             TextRenderer textRenderer = mc.textRenderer;
 
-            Iterator<StatusEffectInstance> orderedEffects = Ordering.natural().reverse().sortedCopy(collection).iterator();
+            Iterator<StatusEffectInstance> orderedEffects = Ordering.natural().reverse().sortedCopy(collection).stream()
+                    .filter(StatusEffectInstance::shouldShowIcon).iterator();
 
             int goodIndex = 0, badIndex = 0;
             while (orderedEffects.hasNext()) {
