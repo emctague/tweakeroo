@@ -1,5 +1,6 @@
 package fi.dy.masa.tweakeroo.config;
 
+import fi.dy.masa.malilib.util.WorldUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -351,7 +352,7 @@ public class Callbacks
                                     .append(",")
                                     .append(levelName.replaceAll(",", "\\,"))
                                     .append(",")
-                                    .append(this.mc.world.getRegistryManager().getDimensionTypes().getId(this.mc.world.getDimension()).getPath().replaceAll(",", "\\,"))
+                                    .append(WorldUtils.getDimensionId(this.mc.world).replaceAll(",", "\\,"))
                                     .append("\r\n");
                             pw.close();
                         } catch (IOException e) {
